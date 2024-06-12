@@ -8,14 +8,14 @@ pub type GlfwWindowUpdate = dyn Fn(&mut GlfwWindowState);
 pub type GlfwWindowRender = dyn Fn(&mut GlfwWindowState);
 
 pub type GlfwWindowPositionChanged = dyn Fn(&mut GlfwWindowState);
-pub type GlfwWindowSizeChanged = dyn Fn(&mut GlfwWindowState, i32, i32);
+pub type GlfwWindowSizeChanged = dyn Fn(&mut GlfwWindowState);
 pub type GlfwWindowClose = dyn Fn(&mut GlfwWindowState);
 pub type GlfwWindowRefresh = dyn Fn(&mut GlfwWindowState);
 pub type GlfwWindowFocus = dyn Fn(&mut GlfwWindowState, bool);
 pub type GlfwWindowIconify = dyn Fn(&mut GlfwWindowState, bool);
 pub type GlfwWindowFrameBufferSizeChanged = dyn Fn(&mut GlfwWindowState, i32, i32);
 pub type GlfwWindowMouseButton = dyn Fn(&mut GlfwWindowState, MouseButton, Action, Modifiers);
-pub type GlfwCursorPositionChanged = dyn Fn(&mut GlfwWindowState, f64, f64);
+pub type GlfwCursorPositionChanged = dyn Fn(&mut GlfwWindowState);
 pub type GlfwCursorEnter = dyn Fn(&mut GlfwWindowState, bool);
 pub type GlfwScroll = dyn Fn(&mut GlfwWindowState, f64, f64);
 pub type GlfwWindowKey = dyn Fn(&mut GlfwWindowState, Key, Scancode, Action, Modifiers);

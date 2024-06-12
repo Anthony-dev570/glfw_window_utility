@@ -10,5 +10,6 @@ pub struct GlfwWindowState<'a> {
     pub(crate) window: &'a mut Window,
     pub(crate) input: &'a mut GlfwInput,
     pub(crate) clock: &'a GlfwClock,
-    pub(crate) window_position: [i32; 2]
+    pub(crate) window_position: [i32; 2],
+    pub(crate) force_render: bool
 }

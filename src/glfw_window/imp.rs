@@ -1,3 +1,4 @@
+use std::path::PathBuf;
 use glfw::*;
 use glfw::WindowMode::Windowed;
 
@@ -27,10 +28,24 @@ impl<'a> GlfwWindow<'a> {
         on_window_init => Fn(&mut GlfwWindowState),
         on_window_update => Fn(&mut GlfwWindowState),
         on_window_render => Fn(&mut GlfwWindowState),
-        on_window_refresh => Fn(&mut GlfwWindowState),
-        on_window_close => Fn(&mut GlfwWindowState),
 
-        on_position_changed => Fn(&mut GlfwWindowState)
+        on_position_changed => Fn(&mut GlfwWindowState),
+        on_size_changed => Fn(&mut GlfwWindowState),
+        on_window_close => Fn(&mut GlfwWindowState),
+        on_window_refresh => Fn(&mut GlfwWindowState),
+        on_window_focus => Fn(&mut GlfwWindowState, bool),
+        on_window_iconify => Fn(&mut GlfwWindowState, bool),
+        on_frame_buffer_size_changed => Fn(&mut GlfwWindowState, i32, i32),
+        on_mouse_button => Fn(&mut GlfwWindowState, MouseButton, Action, Modifiers),
+        on_cursor_position_changed => Fn(&mut GlfwWindowState),
+        on_cursor_enter => Fn(&mut GlfwWindowState, bool),
+        on_scroll => Fn(&mut GlfwWindowState, f64, f64),
+        on_key => Fn(&mut GlfwWindowState, Key, Scancode, Action, Modifiers),
+        on_char => Fn(&mut GlfwWindowState, char),
+        on_char_modifiers => Fn(&mut GlfwWindowState, char, Modifiers),
+        on_file_drop => Fn(&mut GlfwWindowState, Vec<PathBuf>),
+        on_maximize => Fn(&mut GlfwWindowState, bool),
+        on_content_scale => Fn(&mut GlfwWindowState, f32, f32)
     }
 
     pub fn run(self) -> Result<(), GlfwError> {
@@ -60,6 +75,7 @@ impl<'a> GlfwWindow<'a> {
                 input: &mut input,
                 clock: &clock,
                 window_position: position,
+                force_render: false,
             })
         });
 
@@ -75,7 +91,8 @@ impl<'a> GlfwWindow<'a> {
                 window: &mut window,
                 input: &mut input,
                 clock: &clock,
-                window_position: position
+                window_position: position,
+                force_render: false,
             };
             for (_, b) in flush_messages(&receiver) {
                 match b {
@@ -89,7 +106,7 @@ impl<'a> GlfwWindow<'a> {
                     WindowEvent::Size(w, h) => {
                         size = [w as u32, h as u32];
                         for opc in &self.on_size_changed {
-                            (&*opc)(&mut window_state, w, h);
+                            (&*opc)(&mut window_state);
                         }
                     }
                     WindowEvent::Close => {
@@ -126,7 +143,7 @@ impl<'a> GlfwWindow<'a> {
                     WindowEvent::CursorPos(x, y) => {
                         window_state.input.update_mouse_position(x, y, size[1] as f64);
                         for opc in &self.on_cursor_position_changed {
-                            (&*opc)(&mut window_state, x, y);
+                            (&*opc)(&mut window_state);
                         }
                     }
                     WindowEvent::CursorEnter(enter) => {
@@ -178,7 +195,8 @@ impl<'a> GlfwWindow<'a> {
                     window: &mut window,
                     input: &mut input,
                     clock: &clock,
-                    window_position: position
+                    window_position: position,
+                    force_render: false,
                 })
             });
             if render {
@@ -189,6 +207,7 @@ impl<'a> GlfwWindow<'a> {
                         input: &mut input,
                         clock: &clock,
                         window_position: position,
+                        force_render: false,
                     })
                 });
             }
