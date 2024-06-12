@@ -1,5 +1,8 @@
+pub mod imp;
+
 #[derive(Debug, Clone, Copy)]
 pub struct GlfwClock {
-    pub elapsed: f64,
-    pub delta: f64
+    elapsed: f64,
+    delta: f64,
+    fr: f64,
 }

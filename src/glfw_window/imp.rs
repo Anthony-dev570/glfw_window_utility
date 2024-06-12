@@ -1,5 +1,6 @@
 use glfw::*;
 use glfw::WindowMode::Windowed;
+
 use crate::glfw_clock::GlfwClock;
 use crate::glfw_error::GlfwError;
 use crate::glfw_error::GlfwError::FailedToCreateWindow;
@@ -17,42 +18,54 @@ impl<'a> GlfwWindow<'a> {
         }
     }
 
+    pub fn with_render_strategy(mut self, glfw_render_strategy: GlfwRenderStrategy) -> Self {
+        self.render_strategy = glfw_render_strategy;
+        self
+    }
+
+    crate::builder! {
+        on_window_init => Fn(&mut GlfwWindowState),
+        on_window_update => Fn(&mut GlfwWindowState),
+        on_window_render => Fn(&mut GlfwWindowState),
+        on_window_refresh => Fn(&mut GlfwWindowState),
+        on_window_close => Fn(&mut GlfwWindowState),
+
+        on_position_changed => Fn(&mut GlfwWindowState)
+    }
+
     pub fn run(self) -> Result<(), GlfwError> {
         let mut glfw = init(fail_on_errors!()).map_err(|e| GlfwError::Init(e))?;
 
-        let mut size = self.size;
 
         let mut input = GlfwInput::default();
 
-        let (mut window, receiver) = glfw.create_window(size[0], size[1], self.title, Windowed).ok_or(FailedToCreateWindow)?;
-
+        let (mut window, receiver) = glfw.create_window(self.size[0], self.size[1], self.title, Windowed).ok_or(FailedToCreateWindow)?;
         window.set_all_polling(true);
 
+
+        let mut size = self.size;
+        let mut position = {
+            let p = window.get_pos();
+            [p.0, p.1]
+        };
+
         gl::load_with(|s| window.get_proc_address(s));
+
+        let mut clock = GlfwClock::default();
 
         self.on_window_init.iter().for_each(|init| {
             (&*init)(&mut GlfwWindowState {
                 glfw: &mut glfw,
                 window: &mut window,
-                input: &mut input
+                input: &mut input,
+                clock: &clock,
+                window_position: position,
             })
         });
 
-        let mut elapsed = glfw.get_time();
-        let mut fr = 0_f64;
-        #[allow(unused_variables)]
-        let mut fc = 0;
-
-        let mut clock = GlfwClock {
-            elapsed,
-            delta: 0.0,
-        };
-
         loop {
-            let e = elapsed;
-            elapsed = glfw.get_time();
-            clock.delta = elapsed - e;
-            clock.elapsed = elapsed;
+            let render = clock.update(glfw.get_time(), &self.render_strategy);
+
             let should_close = window.should_close();
             if should_close {
                 return Ok(());
@@ -60,13 +73,17 @@ impl<'a> GlfwWindow<'a> {
             let mut window_state = GlfwWindowState {
                 glfw: &mut glfw,
                 window: &mut window,
-                input: &mut input
+                input: &mut input,
+                clock: &clock,
+                window_position: position
             };
             for (_, b) in flush_messages(&receiver) {
                 match b {
                     WindowEvent::Pos(x, y) => {
+                        position = [x, y];
+                        window_state.window_position = position;
                         for opc in &self.on_position_changed {
-                            (&*opc)(&mut window_state, x, y);
+                            (&*opc)(&mut window_state);
                         }
                     }
                     WindowEvent::Size(w, h) => {
@@ -101,6 +118,7 @@ impl<'a> GlfwWindow<'a> {
                         }
                     }
                     WindowEvent::MouseButton(a, b, c) => {
+                        window_state.input.process_mouse_button(a, b);
                         for opc in &self.on_mouse_button {
                             (&*opc)(&mut window_state, a, b, c);
                         }
@@ -122,6 +140,7 @@ impl<'a> GlfwWindow<'a> {
                         }
                     }
                     WindowEvent::Key(a, b, c, d) => {
+                        window_state.input.process_key(a, c);
                         for opc in &self.on_key {
                             (&*opc)(&mut window_state, a, b, c, d);
                         }
@@ -157,47 +176,26 @@ impl<'a> GlfwWindow<'a> {
                 (&*init)(&mut GlfwWindowState {
                     glfw: &mut glfw,
                     window: &mut window,
-                    input: &mut input
-                }, elapsed)
+                    input: &mut input,
+                    clock: &clock,
+                    window_position: position
+                })
             });
-            let render = match self.render_strategy {
-                GlfwRenderStrategy::Uncapped => true,
-                GlfwRenderStrategy::Interval(f) => {
-                    let mut out = false;
-
-                    fr += clock.delta;
-                    if fr >= f {
-                        fr -= f;
-                        fc += 1;
-                        out = true;
-                    }
-                    out
-                },
-                GlfwRenderStrategy::FPS(fps) => {
-                    let mut out = false;
-                    let f = fps as f64 / 60_f64 / 60_f64;
-                    fr += clock.delta;
-                    if fr >= f {
-                        fc += 1;
-                        fr -= f;
-                        out = true;
-                    }
-                    out
-                }
-            };
-
             if render {
                 self.on_window_render.iter().for_each(|init| {
                     (&*init)(&mut GlfwWindowState {
                         glfw: &mut glfw,
                         window: &mut window,
-                        input: &mut input
-                    }, elapsed)
+                        input: &mut input,
+                        clock: &clock,
+                        window_position: position,
+                    })
                 });
             }
 
             window.swap_buffers();
             glfw.poll_events();
+            input.update();
         }
     }
 }

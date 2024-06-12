@@ -16,6 +16,7 @@ impl Default for GlfwMouseInput {
 }
 
 impl GlfwMouseInput {
+
     pub fn update_mouse_position(&mut self, x: f64, y: f64, window_height: f64) {
         {
             let pos = [x, y];
@@ -82,5 +83,14 @@ impl GlfwMouseInput {
         self.relative_mouse_position_delta = [0_f64; 2];
         self.mouse_button_released = [false; 128];
         self.mouse_button_pressed = [false; 128];
+    }
+    pub(crate) fn mouse_button_pressed(&self) -> [bool; 128] {
+        self.mouse_button_pressed
+    }
+    pub(crate) fn mouse_button_released(&self) -> [bool; 128] {
+        self.mouse_button_released
+    }
+    pub(crate) fn mouse_button_held(&self) -> [bool; 128] {
+        self.mouse_button_held
     }
 }

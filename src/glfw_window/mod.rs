@@ -2,6 +2,7 @@ use crate::glfw_event_callbacks::*;
 use crate::glfw_render_strategy::GlfwRenderStrategy;
 
 pub mod imp;
+pub mod builder_macro;
 
 #[derive(Default)]
 pub struct GlfwWindow<'a> {

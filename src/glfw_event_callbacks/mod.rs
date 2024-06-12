@@ -4,10 +4,10 @@ use glfw::{Action, Key, Modifiers, MouseButton, Scancode};
 use crate::glfw_window_state::GlfwWindowState;
 
 pub type GlfwWindowInitialize = dyn Fn(&mut GlfwWindowState);
-pub type GlfwWindowUpdate = dyn Fn(&mut GlfwWindowState, f64);
-pub type GlfwWindowRender = dyn Fn(&mut GlfwWindowState, f64);
+pub type GlfwWindowUpdate = dyn Fn(&mut GlfwWindowState);
+pub type GlfwWindowRender = dyn Fn(&mut GlfwWindowState);
 
-pub type GlfwWindowPositionChanged = dyn Fn(&mut GlfwWindowState, i32, i32);
+pub type GlfwWindowPositionChanged = dyn Fn(&mut GlfwWindowState);
 pub type GlfwWindowSizeChanged = dyn Fn(&mut GlfwWindowState, i32, i32);
 pub type GlfwWindowClose = dyn Fn(&mut GlfwWindowState);
 pub type GlfwWindowRefresh = dyn Fn(&mut GlfwWindowState);
