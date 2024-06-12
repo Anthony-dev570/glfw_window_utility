@@ -13,7 +13,7 @@ mod tests {
 
     #[test]
     fn it_works() {
-        let mut window = GlfwWindow::<'_, 512, 512>::new([500; 2], "Hello");
+        let mut window = GlfwWindow::new([500; 2], "Hello");
         window.render_strategy = FPS(60);
         window.on_window_close.push(Box::new(|_| {
 

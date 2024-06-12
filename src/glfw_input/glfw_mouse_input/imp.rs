@@ -20,4 +20,33 @@ impl GlfwMouseInput {
         }
         true
     }
+
+    pub fn is_mouse_button_pressed(&self, button: u32) -> Option<bool> {
+        if button as usize >= self.mouse_button_pressed.len() {
+            return None;
+        }
+        Some(self.mouse_button_pressed[button as usize])
+    }
+
+    pub fn is_mouse_button_released(&self, button: u32) -> Option<bool> {
+        if button as usize >= self.mouse_button_pressed.len() {
+            return None;
+        }
+        Some(self.mouse_button_released[button as usize])
+    }
+
+    pub fn is_mouse_button_held(&self, button: u32) -> Option<bool> {
+        if button as usize >= self.mouse_button_pressed.len() {
+            return None;
+        }
+        Some(self.mouse_button_held[button as usize])
+    }
+
+
+    pub fn update(&mut self) {
+        self.mouse_delta = [0_f64; 2];
+        self.relative_mouse_position_delta = [0_f64; 2];
+        self.mouse_button_released = [false; 128];
+        self.mouse_button_pressed = [false; 128];
+    }
 }
