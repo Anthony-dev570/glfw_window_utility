@@ -1,7 +1,25 @@
 use glfw::{Action, Key, MouseButton};
+use crate::glfw_input::glfw_mouse_input::GlfwMouseInput;
 use crate::glfw_input::GlfwInput;
 
+impl Default for GlfwInput {
+    fn default() -> Self {
+        Self {
+            mouse: Default::default(),
+            keyboard: Default::default(),
+        }
+    }
+}
+
 impl GlfwInput {
+    pub fn mouse(&self) -> &GlfwMouseInput {
+        &self.mouse
+    }
+
+    pub fn update_mouse_position(&mut self, x: f64, y: f64, window_height: f64) {
+        self.mouse.update_mouse_position(x, y, window_height);
+    }
+
     pub fn process_mouse_button(&mut self, button: MouseButton, action: Action) -> bool {
         self.mouse.process_mouse_button(button, action)
     }

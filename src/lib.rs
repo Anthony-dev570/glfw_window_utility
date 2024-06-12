@@ -20,6 +20,7 @@ mod tests {
         }));
         window.on_window_update.push(Box::new(|_a, t| {
             //_a.window.set_title(&format!("{t}"));
+            _a.window.set_title(&format!("{:?}", _a.input.mouse()));
             if t >= 10.0 {
                 _a.window.set_should_close(true);
             }

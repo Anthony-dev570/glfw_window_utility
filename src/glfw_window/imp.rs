@@ -3,6 +3,7 @@ use glfw::WindowMode::Windowed;
 use crate::glfw_clock::GlfwClock;
 use crate::glfw_error::GlfwError;
 use crate::glfw_error::GlfwError::FailedToCreateWindow;
+use crate::glfw_input::GlfwInput;
 use crate::glfw_render_strategy::GlfwRenderStrategy;
 use crate::glfw_window::GlfwWindow;
 use crate::glfw_window_state::GlfwWindowState;
@@ -19,8 +20,9 @@ impl<'a> GlfwWindow<'a> {
     pub fn run(self) -> Result<(), GlfwError> {
         let mut glfw = init(fail_on_errors!()).map_err(|e| GlfwError::Init(e))?;
 
-        let size = self.size;
+        let mut size = self.size;
 
+        let mut input = GlfwInput::default();
 
         let (mut window, receiver) = glfw.create_window(size[0], size[1], self.title, Windowed).ok_or(FailedToCreateWindow)?;
 
@@ -32,6 +34,7 @@ impl<'a> GlfwWindow<'a> {
             (&*init)(&mut GlfwWindowState {
                 glfw: &mut glfw,
                 window: &mut window,
+                input: &mut input
             })
         });
 
@@ -57,6 +60,7 @@ impl<'a> GlfwWindow<'a> {
             let mut window_state = GlfwWindowState {
                 glfw: &mut glfw,
                 window: &mut window,
+                input: &mut input
             };
             for (_, b) in flush_messages(&receiver) {
                 match b {
@@ -66,6 +70,7 @@ impl<'a> GlfwWindow<'a> {
                         }
                     }
                     WindowEvent::Size(w, h) => {
+                        size = [w as u32, h as u32];
                         for opc in &self.on_size_changed {
                             (&*opc)(&mut window_state, w, h);
                         }
@@ -101,6 +106,7 @@ impl<'a> GlfwWindow<'a> {
                         }
                     }
                     WindowEvent::CursorPos(x, y) => {
+                        window_state.input.update_mouse_position(x, y, size[1] as f64);
                         for opc in &self.on_cursor_position_changed {
                             (&*opc)(&mut window_state, x, y);
                         }
@@ -151,6 +157,7 @@ impl<'a> GlfwWindow<'a> {
                 (&*init)(&mut GlfwWindowState {
                     glfw: &mut glfw,
                     window: &mut window,
+                    input: &mut input
                 }, elapsed)
             });
             let render = match self.render_strategy {
@@ -184,6 +191,7 @@ impl<'a> GlfwWindow<'a> {
                     (&*init)(&mut GlfwWindowState {
                         glfw: &mut glfw,
                         window: &mut window,
+                        input: &mut input
                     }, elapsed)
                 });
             }

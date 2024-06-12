@@ -1,6 +1,18 @@
 use glfw::{Action, Key};
 use crate::glfw_input::glfw_keyboard_input::GlfwKeyboardInput;
 
+
+
+impl Default for  GlfwKeyboardInput {
+    fn default() -> Self {
+        Self {
+            pressed: [false; 512],
+            released: [false; 512],
+            held: [false; 512],
+        }
+    }
+}
+
 impl GlfwKeyboardInput {
     pub fn process_key(&mut self, key: Key, action: Action) -> bool {
         let index = key as u32 as usize;
