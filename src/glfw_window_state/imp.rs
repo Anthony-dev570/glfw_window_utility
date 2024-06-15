@@ -8,17 +8,17 @@ impl <'a> GlfwWindowState<'a> {
         self.force_render = render;
     }
 
-    pub fn glfw(&self) -> &'a mut Glfw {
-        self.glfw
+    pub fn glfw(&mut self) -> &mut &'a mut Glfw {
+        &mut self.glfw
     }
-    pub fn window(&self) -> &'a mut Window {
-        self.window
+    pub fn window(&mut self) -> &mut &'a mut Window {
+        &mut self.window
     }
-    pub fn input(&self) -> &'a mut GlfwInput {
-        self.input
+    pub fn input(&mut self) -> &mut &'a mut GlfwInput {
+        &mut self.input
     }
-    pub fn clock(&self) -> &'a GlfwClock {
-        self.clock
+    pub fn clock(&mut self) -> &mut &'a GlfwClock {
+        &mut self.clock
     }
     pub fn window_position(&self) -> [i32; 2] {
         self.window_position
