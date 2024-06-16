@@ -48,6 +48,11 @@ impl<'a> GlfwWindow<'a> {
         on_content_scale => Fn(&mut GlfwWindowState, f32, f32)
     }
 
+    pub fn with_resize_viewport(mut self, resize_viewport: bool) -> Self {
+        self.resize_viewport_on_resize = resize_viewport;
+        self
+    }
+
     pub fn run(self) -> Result<(), GlfwError> {
         let mut glfw = init(fail_on_errors!()).map_err(|e| GlfwError::Init(e))?;
 
@@ -105,8 +110,10 @@ impl<'a> GlfwWindow<'a> {
                     }
                     WindowEvent::Size(w, h) => {
                         size = [w as u32, h as u32];
-                        unsafe {
-                            gl::Viewport(0, 0, w, h);
+                        if self.resize_viewport_on_resize {
+                            unsafe {
+                                gl::Viewport(0, 0, w, h);
+                            }
                         }
                         for opc in &self.on_size_changed {
                             (&*opc)(&mut window_state);

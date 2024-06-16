@@ -9,6 +9,7 @@ pub struct GlfwWindow<'a> {
     pub size: [u32; 2],
     pub title: &'a str,
     render_strategy: GlfwRenderStrategy,
+    resize_viewport_on_resize: bool,
 
     on_position_changed: Vec<Box<GlfwWindowPositionChanged>>,
     on_size_changed: Vec<Box<GlfwWindowSizeChanged>>,
