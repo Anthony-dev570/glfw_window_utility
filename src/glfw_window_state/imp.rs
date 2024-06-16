@@ -26,4 +26,7 @@ impl <'a> GlfwWindowState<'a> {
     pub fn force_render(&self) -> bool {
         self.force_render
     }
+    pub fn window_size(&self) -> [u32; 2] {
+        self.window_size
+    }
 }

@@ -81,6 +81,7 @@ impl<'a> GlfwWindow<'a> {
                 clock: &clock,
                 window_position: position,
                 force_render: false,
+                window_size: size,
             })
         });
 
@@ -98,6 +99,7 @@ impl<'a> GlfwWindow<'a> {
                 clock: &clock,
                 window_position: position,
                 force_render: false,
+                window_size: size,
             };
             for (_, b) in flush_messages(&receiver) {
                 match b {
@@ -207,6 +209,7 @@ impl<'a> GlfwWindow<'a> {
                     clock: &clock,
                     window_position: position,
                     force_render: false,
+                    window_size: size,
                 })
             });
             if render {
@@ -218,6 +221,7 @@ impl<'a> GlfwWindow<'a> {
                         clock: &clock,
                         window_position: position,
                         force_render: false,
+                        window_size: size,
                     })
                 });
             }
