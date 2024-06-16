@@ -105,6 +105,9 @@ impl<'a> GlfwWindow<'a> {
                     }
                     WindowEvent::Size(w, h) => {
                         size = [w as u32, h as u32];
+                        unsafe {
+                            gl::Viewport(0, 0, w, h);
+                        }
                         for opc in &self.on_size_changed {
                             (&*opc)(&mut window_state);
                         }
