@@ -93,4 +93,17 @@ impl GlfwMouseInput {
     pub(crate) fn mouse_button_held(&self) -> [bool; 128] {
         self.mouse_button_held
     }
+
+    pub fn mouse_position(&self) -> [f64; 2] {
+        self.mouse_position
+    }
+    pub fn mouse_delta(&self) -> [f64; 2] {
+        self.mouse_delta
+    }
+    pub fn relative_mouse_position(&self) -> [f64; 2] {
+        self.relative_mouse_position
+    }
+    pub fn relative_mouse_position_delta(&self) -> [f64; 2] {
+        self.relative_mouse_position_delta
+    }
 }
